@@ -71,6 +71,7 @@ static GtkToggleActionEntry toggle_entries[] =
 	{ "WordWrap", NULL, N_("_Word Wrap"), NULL, NULL, G_CALLBACK (on_option_word_wrap), FALSE },
 	{ "LineNumbers", NULL, N_("_Line Numbers"), NULL, NULL, G_CALLBACK (on_option_line_numbers), FALSE },
 	{ "AutoIndent", NULL, N_("_Auto Indent"), NULL, NULL, G_CALLBACK (on_option_auto_indent), FALSE },
+	{ "SaveOnFocus", NULL, N_("Auto _save on lost focus"), NULL, NULL, G_CALLBACK (on_option_focus_save), FALSE },
 };
 static guint n_toggle_entries = G_N_ELEMENTS (toggle_entries);
 
@@ -118,6 +119,7 @@ static const gchar *ui_info =
 "      <menuitem action='LineNumbers'/>"
 "      <separator/>"
 "      <menuitem action='AutoIndent'/>"
+"      <menuitem action='SaveOnFocus'/>"
 "    </menu>"
 "    <menu action='Help'>"
 "      <menuitem action='About'/>"

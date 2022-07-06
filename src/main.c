@@ -33,6 +33,7 @@ typedef struct {
 	gboolean wordwrap;
 	gboolean linenumbers;
 	gboolean autoindent;
+	gboolean focussave;
 	gint tabwidth;
 } Conf;
 
@@ -67,6 +68,8 @@ static void load_config_file(Conf *conf)
 			fgets(buf, sizeof(buf), fp);
 			conf->autoindent = atoi(buf);
 			fgets(buf, sizeof(buf), fp);
+			conf->focussave = atoi(buf);
+			fgets(buf, sizeof(buf), fp);
 			conf->tabwidth = atoi(buf) > 0 ? atoi(buf) : get_current_tab_width();
 		}
 		g_strfreev(num);
@@ -80,7 +83,7 @@ void save_config_file(void)
 	gchar *path;
 	gint width, height, tabwidth;
 	gchar *fontname;
-	gboolean wordwrap, linenumbers, autoindent;
+	gboolean wordwrap, linenumbers, autoindent, focussave;
 
 	gtk_window_get_size(GTK_WINDOW(pub->mw->window), &width, &height);
 	fontname = pango_font_description_to_string(gtk_style_context_get_font(gtk_widget_get_style_context(pub->mw->view), 0));
@@ -93,6 +96,9 @@ void save_config_file(void)
 	autoindent = gtk_toggle_action_get_active(
 		GTK_TOGGLE_ACTION(gtk_ui_manager_get_action(pub->mw->menubar,
 			"/M/Options/AutoIndent")));
+	focussave = gtk_toggle_action_get_active(
+		GTK_TOGGLE_ACTION(gtk_ui_manager_get_action(pub->mw->menubar,
+			"/M/Options/SaveOnFocus")));
 	tabwidth = get_current_tab_width();
 
 	path = g_build_filename(g_get_user_config_dir(), PACKAGE, NULL);
@@ -115,6 +121,7 @@ void save_config_file(void)
 	fprintf(fp, "%d\n", wordwrap);
 	fprintf(fp, "%d\n", linenumbers);
 	fprintf(fp, "%d\n", autoindent);
+	fprintf(fp, "%d\n", focussave);
 	fprintf(fp, "%d\n", tabwidth);
 	fclose(fp);
 
@@ -227,6 +234,7 @@ gint main(gint argc, gchar **argv)
 	conf->wordwrap    = FALSE;
 	conf->linenumbers = FALSE;
 	conf->autoindent  = FALSE;
+	conf->focussave   = FALSE;
 	conf->tabwidth    = get_current_tab_width();
 
 	load_config_file(conf);
@@ -246,6 +254,9 @@ gint main(gint argc, gchar **argv)
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(
 		gtk_ui_manager_get_widget(pub->mw->menubar, "/M/Options/AutoIndent")),
 		conf->autoindent);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(
+		gtk_ui_manager_get_widget(pub->mw->menubar, "/M/Options/SaveOnFocus")),
+		conf->focussave);
 
 	gtk_widget_show_all(pub->mw->window);
 	g_free(conf->fontname);
